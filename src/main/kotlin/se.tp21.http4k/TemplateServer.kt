@@ -5,6 +5,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.then
+import org.http4k.filter.RequestFilters
 import org.http4k.filter.ServerFilters
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
@@ -33,4 +34,8 @@ val templateApp: RoutingHttpHandler =
         )
     )
 
-fun TemplateServer(port: Int) = templateApp.asServer(Jetty(port))
+fun TemplateServer(port: Int) =
+    RequestFilters.ProxyHost()
+        .then(templateApp)
+        .asServer(Jetty(port))
+        .start()
